@@ -518,7 +518,7 @@ function submitForm() {
   });
 
   // Abre WhatsApp
-  var msg = 'Oi Gabriel! Sou ' + name + ', ' + r.msg + ' Meu WhatsApp é ' + phone + '.';
+  var msg = 'Oi Gabriel! Sou ' + name + '. Fiz o teste e deu perfil ' + r.name + '. Meu WhatsApp é ' + phone + '.';
   window.open('https://wa.me/'+WA+'?text='+encodeURIComponent(msg),'_blank');
   document.getElementById('success-name').textContent = name + ',';
   document.getElementById('form-fields').style.display = 'none';
