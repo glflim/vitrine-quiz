@@ -187,7 +187,7 @@ h1 span{color:var(--gold)}
 <style>
 .iti{width:100%}
 .iti__flag-container{z-index:10}
-#f-phone{padding-left:52px!important;width:100%}
+#f-phone{padding-left:48px!important;width:100%}
 </style>
 </head>
 <body>
@@ -572,8 +572,8 @@ function restart() {
 var itiPhone = window.intlTelInput(document.getElementById('f-phone'), {
   initialCountry: 'br',
   preferredCountries: ['br', 'us'],
-  separateDialCode: true,
   formatAsYouType: true,
+  autoPlaceholder: 'aggressive',
   utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.7/build/js/utils.js'
 });
 </script>
