@@ -195,6 +195,7 @@ h1 span{color:var(--gold)}
 .iti__country-name{color:#111!important}
 .iti__dial-code{color:#555!important}
 .iti__divider{border-bottom:1px solid #ddd!important}
+.iti__country-list .iti__dial-code{display:none!important}
 .iti__preferred{border-bottom:2px solid #C9A84C!important;background:#fffdf5!important}
 .iti__preferred .iti__country-name{color:#111!important;font-weight:600!important}
 .country-btns{display:flex;gap:8px;margin-bottom:8px}
@@ -556,7 +557,8 @@ function updateFormSub() {
 
 function submitForm() {
   var name = document.getElementById('f-name').value.trim();
-  var phone = '+' + itiPhone.getSelectedCountryData().dialCode + ' ' + document.getElementById('f-phone').value.trim();
+  var countryData = itiPhone.getSelectedCountryData();
+  var phone = isoParaBandeira(countryData.iso2) + ' +' + countryData.dialCode + ' ' + document.getElementById('f-phone').value.trim();
   var email = document.getElementById('f-email').value.trim();
   if (!name || !phone || !email) { alert('Por favor, preencha todos os campos.'); return; }
   var r = results[curProfile];
@@ -595,23 +597,84 @@ var itiPhone = window.intlTelInput(document.getElementById('f-phone'), {
   preferredCountries: ['br', 'us'],
   countrySearch: true,
   autoPlaceholder: 'off',
+  customPlaceholder: function(){ return ''; },
   utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.7/build/js/utils.js'
 });
 
 var phoneInput = document.getElementById('f-phone');
 
+function isoParaBandeira(iso) {
+  return iso.toUpperCase().split('').map(function(c){
+    return String.fromCodePoint(127397 + c.charCodeAt(0));
+  }).join('');
+}
+
+var mascaras = {
+  // Americas
+  br: function(d){ return d.length<=10 ? d.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'') : d.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3').replace(/-$/,''); },
+  us: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'').substring(0,14); },
+  ca: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'').substring(0,14); },
+  ar: function(d){ return d.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3').replace(/-$/,''); },
+  mx: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'').substring(0,14); },
+  co: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'$1 $2 $3').trim().substring(0,12); },
+  cl: function(d){ return d.replace(/(\d{1})(\d{4})(\d{0,4})/,'$1 $2 $3').trim().substring(0,11); },
+  pe: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,11); },
+  // Europa Ocidental
+  pt: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,11); },
+  es: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,11); },
+  fr: function(d){ return d.replace(/(\d{2})(\d{2})(\d{2})(\d{2})(\d{0,2})/,'$1 $2 $3 $4 $5').trim().substring(0,14); },
+  gb: function(d){ return d.replace(/(\d{5})(\d{0,6})/,'$1 $2').trim().substring(0,12); },
+  de: function(d){ return d.replace(/(\d{3})(\d{0,8})/,'$1 $2').trim().substring(0,12); },
+  it: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'$1 $2 $3').trim().substring(0,12); },
+  nl: function(d){ return d.replace(/(\d{2})(\d{4})(\d{0,4})/,'$1 $2 $3').trim().substring(0,12); },
+  be: function(d){ return d.replace(/(\d{3})(\d{2})(\d{2})(\d{0,2})/,'$1 $2 $3 $4').trim().substring(0,12); },
+  ch: function(d){ return d.replace(/(\d{2})(\d{3})(\d{2})(\d{0,2})/,'$1 $2 $3 $4').trim().substring(0,13); },
+  at: function(d){ return d.replace(/(\d{3})(\d{0,8})/,'$1 $2').trim().substring(0,12); },
+  ie: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'$1 $2 $3').trim().substring(0,12); },
+  lu: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,11); },
+  // Europa do Norte
+  se: function(d){ return d.replace(/(\d{2})(\d{3})(\d{0,4})/,'$1-$2 $3').trim().substring(0,12); },
+  no: function(d){ return d.replace(/(\d{3})(\d{2})(\d{0,3})/,'$1 $2 $3').trim().substring(0,10); },
+  dk: function(d){ return d.replace(/(\d{2})(\d{2})(\d{2})(\d{0,2})/,'$1 $2 $3 $4').trim().substring(0,11); },
+  fi: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'$1 $2 $3').trim().substring(0,12); },
+  // Europa do Leste
+  pl: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,11); },
+  cz: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,11); },
+  hu: function(d){ return d.replace(/(\d{2})(\d{3})(\d{0,4})/,'($1) $2 $3').trim().substring(0,13); },
+  ro: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,11); },
+  bg: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,11); },
+  hr: function(d){ return d.replace(/(\d{2})(\d{3})(\d{0,4})/,'$1 $2 $3').trim().substring(0,11); },
+  sk: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,11); },
+  si: function(d){ return d.replace(/(\d{2})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,10); },
+  gr: function(d){ return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'$1 $2 $3').trim().substring(0,12); },
+  ru: function(d){ return d.replace(/(\d{3})(\d{3})(\d{2})(\d{0,2})/,'($1) $2-$3-$4').replace(/-$/,'').substring(0,16); },
+  ua: function(d){ return d.replace(/(\d{2})(\d{3})(\d{2})(\d{0,2})/,'($1) $2-$3-$4').replace(/-$/,'').substring(0,15); },
+  // Outros
+  tr: function(d){ return d.replace(/(\d{3})(\d{3})(\d{2})(\d{0,2})/,'($1) $2 $3 $4').trim().substring(0,15); },
+  au: function(d){ return d.replace(/(\d{4})(\d{3})(\d{0,3})/,'$1 $2 $3').trim().substring(0,12); },
+  jp: function(d){ return d.replace(/(\d{2})(\d{4})(\d{0,4})/,'$1-$2-$3').replace(/-$/,'').substring(0,13); }
+};
+
+var placeholders = {
+  br:'(00) 00000-0000', us:'(000) 000-0000', ca:'(000) 000-0000',
+  ar:'(00) 0000-0000', mx:'(000) 000-0000', co:'000 000 0000',
+  cl:'0 0000 0000', pe:'000 000 000',
+  pt:'000 000 000', es:'000 000 000', fr:'00 00 00 00 00',
+  gb:'00000 000000', de:'000 00000000', it:'000 000 0000',
+  nl:'00 0000 0000', be:'000 00 00 00', ch:'00 000 00 00',
+  at:'000 00000000', ie:'000 000 0000', lu:'000 000 000',
+  se:'00-000 0000', no:'000 00 000', dk:'00 00 00 00',
+  fi:'000 000 0000', pl:'000 000 000', cz:'000 000 000',
+  hu:'(00) 000 0000', ro:'000 000 000', bg:'000 000 000',
+  hr:'00 000 0000', sk:'000 000 000', si:'00 000 000',
+  gr:'000 000 0000', ru:'(000) 000-00-00', ua:'(00) 000-00-00',
+  tr:'(000) 000 00 00', au:'0000 000 000', jp:'00-0000-0000'
+};
+
 function aplicarMascara(val, pais) {
   var d = val.replace(/\D/g,'');
-  if (pais === 'br') {
-    if (d.length <= 10) {
-      return d.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'');
-    }
-    return d.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'');
-  }
-  if (pais === 'us') {
-    return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'').substring(0,14);
-  }
-  return val;
+  if (mascaras[pais]) return mascaras[pais](d);
+  return d;
 }
 
 phoneInput.addEventListener('input', function() {
@@ -626,7 +689,7 @@ phoneInput.addEventListener('input', function() {
 phoneInput.addEventListener('countrychange', function() {
   this.value = '';
   var pais = itiPhone.getSelectedCountryData().iso2;
-  this.placeholder = pais === 'br' ? '(00) 00000-0000' : pais === 'us' ? '(000) 000-0000' : 'Seu numero';
+  this.placeholder = placeholders[pais] || 'Seu numero';
 });
 
 phoneInput.placeholder = '(00) 00000-0000';
@@ -637,7 +700,7 @@ function selecionarPais(iso) {
   var map = {'br':0,'us':1};
   if (map[iso] !== undefined) document.querySelectorAll('.country-btn')[map[iso]].classList.add('active');
   phoneInput.value = '';
-  phoneInput.placeholder = iso === 'br' ? '(00) 00000-0000' : iso === 'us' ? '(000) 000-0000' : 'Seu numero';
+  phoneInput.placeholder = placeholders[iso] || 'Seu numero';
   phoneInput.focus();
 }
 
