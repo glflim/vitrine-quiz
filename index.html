@@ -367,6 +367,16 @@ var questions = [
       {ico:"🎯", txt:"Condições de pagamento flexíveis e acessíveis", sub:"Facilidade financeira", val:"m"},
       {ico:"⏱️", txt:"Aproveitar o momento certo antes que os lotes acabem", sub:"Urgência de mercado", val:"i"}
     ]
+  },
+  {
+    cat: "Investimento",
+    text: "Qual faixa de investimento está dentro do seu planejamento?",
+    opts: [
+      {ico:"💰", txt:"R$ 179.900,00 a R$ 200.000,00", sub:"Entrada acessível", val:"m"},
+      {ico:"💵", txt:"R$ 200.000,00 a R$ 250.000,00", sub:"Boa relação custo-benefício", val:"m"},
+      {ico:"💎", txt:"R$ 250.000,00 a R$ 300.000,00", sub:"Alto padrão", val:"i"},
+      {ico:"🏆", txt:"R$ 300.000,00 a R$ 350.000,00", sub:"Investimento premium", val:"i"}
+    ]
   }
 ];
 
@@ -515,7 +525,7 @@ function submitForm() {
     a1: answerTexts[0], a2: answerTexts[1], a3: answerTexts[2],
     a4: answerTexts[3], a5: answerTexts[4], a6: answerTexts[5],
     a7: answerTexts[6], a8: answerTexts[7], a9: answerTexts[8],
-    a10: answerTexts[9]
+    a10: answerTexts[9], a11: answerTexts[10]
   };
 
   fetch(SCRIPT_URL, {
