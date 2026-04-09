@@ -535,7 +535,7 @@ function updateFormSub() {
 
 function submitForm() {
   var name = document.getElementById('f-name').value.trim();
-  var phone = itiPhone.getNumber();
+  var phone = '+' + itiPhone.getSelectedCountryData().dialCode + ' ' + document.getElementById('f-phone').value.trim();
   var email = document.getElementById('f-email').value.trim();
   if (!name || !phone || !email) { alert('Por favor, preencha todos os campos.'); return; }
   var r = results[curProfile];
@@ -572,10 +572,43 @@ function restart() {
 var itiPhone = window.intlTelInput(document.getElementById('f-phone'), {
   initialCountry: 'br',
   preferredCountries: ['br', 'us'],
-  formatAsYouType: true,
-  autoPlaceholder: 'aggressive',
+  countrySearch: true,
+  autoPlaceholder: 'off',
   utilsScript: 'https://cdn.jsdelivr.net/npm/intl-tel-input@19.5.7/build/js/utils.js'
 });
+
+var phoneInput = document.getElementById('f-phone');
+
+function aplicarMascara(val, pais) {
+  var d = val.replace(/\D/g,'');
+  if (pais === 'br') {
+    if (d.length <= 10) {
+      return d.replace(/(\d{2})(\d{4})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'');
+    }
+    return d.replace(/(\d{2})(\d{5})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'');
+  }
+  if (pais === 'us') {
+    return d.replace(/(\d{3})(\d{3})(\d{0,4})/,'($1) $2-$3').replace(/-$/,'').substring(0,14);
+  }
+  return val;
+}
+
+phoneInput.addEventListener('input', function() {
+  var pais = itiPhone.getSelectedCountryData().iso2;
+  var pos = this.selectionStart;
+  var oldLen = this.value.length;
+  this.value = aplicarMascara(this.value, pais);
+  var newLen = this.value.length;
+  this.setSelectionRange(pos + (newLen - oldLen), pos + (newLen - oldLen));
+});
+
+phoneInput.addEventListener('countrychange', function() {
+  this.value = '';
+  var pais = itiPhone.getSelectedCountryData().iso2;
+  this.placeholder = pais === 'br' ? '(00) 00000-0000' : pais === 'us' ? '(000) 000-0000' : 'Seu numero';
+});
+
+phoneInput.placeholder = '(00) 00000-0000';
 </script>
 </body>
 </html>
